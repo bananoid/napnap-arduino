@@ -19,14 +19,14 @@ prog_char s_WT_MSG_APP_SETTINGS[] PROGMEM = "Configure WebClientGetPost Settings
 prog_char s_WT_MSG_WIRE_RX[] PROGMEM = "Arduino Rx Pin (connect to WiFly Tx):";
 prog_char s_WT_MSG_WIRE_TX[] PROGMEM = "Arduino Tx Pin (connect to WiFly Rx):";
 prog_char s_WT_MSG_FAIL_OPEN[] PROGMEM = "Failed on opening connection to:";
-prog_char s_WT_HTML_HEAD_01[] PROGMEM = "HTTP/1.1 200 OK \r ";
-prog_char s_WT_HTML_HEAD_02[] PROGMEM = "Content-Type: text/html;charset=UTF-8\r ";
-prog_char s_WT_HTML_HEAD_03[] PROGMEM = " Content-Length: ";
-prog_char s_WT_HTML_HEAD_04[] PROGMEM = "Connection: close \r\n\r\n";
-prog_char s_WT_POST_HEAD_01[] PROGMEM = "HTTP/1.1\n";
-prog_char s_WT_POST_HEAD_02[] PROGMEM = "Content-Type: application/x-www-form-urlencoded\n";
-prog_char s_WT_POST_HEAD_03[] PROGMEM = "Content-Length: ";
-prog_char s_WT_POST_HEAD_04[] PROGMEM = "Connection: close\n\n";
+// prog_char s_WT_HTML_HEAD_01[] PROGMEM = "HTTP/1.1 200 OK \r ";
+// prog_char s_WT_HTML_HEAD_02[] PROGMEM = "Content-Type: text/html;charset=UTF-8\r ";
+// prog_char s_WT_HTML_HEAD_03[] PROGMEM = " Content-Length: ";
+// prog_char s_WT_HTML_HEAD_04[] PROGMEM = "Connection: close \r\n\r\n";
+// prog_char s_WT_POST_HEAD_01[] PROGMEM = "HTTP/1.1\n";
+// prog_char s_WT_POST_HEAD_02[] PROGMEM = "Content-Type: application/x-www-form-urlencoded\n";
+// prog_char s_WT_POST_HEAD_03[] PROGMEM = "Content-Length: ";
+// prog_char s_WT_POST_HEAD_04[] PROGMEM = "Connection: close\n\n";
 
 #define IDX_WT_SETUP_00 0
 #define IDX_WT_SETUP_01 IDX_WT_SETUP_00
@@ -86,14 +86,14 @@ PROGMEM const char *WT_string_table[] =
   s_WT_MSG_WIRE_RX,
   s_WT_MSG_WIRE_TX,
   s_WT_MSG_FAIL_OPEN,
-  s_WT_HTML_HEAD_01,
-  s_WT_HTML_HEAD_02,
-  s_WT_HTML_HEAD_03,
-  s_WT_HTML_HEAD_04,
-  s_WT_POST_HEAD_01,
-  s_WT_POST_HEAD_02,
-  s_WT_POST_HEAD_03,
-  s_WT_POST_HEAD_04
+  // s_WT_HTML_HEAD_01,
+  // s_WT_HTML_HEAD_02,
+  // s_WT_HTML_HEAD_03,
+  // s_WT_HTML_HEAD_04,
+  // s_WT_POST_HEAD_01,
+  // s_WT_POST_HEAD_02,
+  // s_WT_POST_HEAD_03,
+  // s_WT_POST_HEAD_04
 };
 
 char* GetBuffer_P(const int StringIndex, char* pBuffer, int bufSize) {

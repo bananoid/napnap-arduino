@@ -2,7 +2,7 @@
 #include <Time.h>
 #include <SoftwareSerial.h>
 #include <Streaming.h>
-#include <PString.h>
+// #include <PString.h>
 #include <WiFlySerial.h>
 #include "MemoryFree.h"
 
@@ -15,8 +15,8 @@
 #define NN_SERVER_PORT 3000
 #define NN_SERVER_SOCKET_URI "/sockjs/websocket"
 
-#define REQUEST_BUFFER_SIZE 320
-#define POST_BUFFER_SIZE 60
+#define REQUEST_BUFFER_SIZE 100
+// #define POST_BUFFER_SIZE 60
 #define TEMP_BUFFER_SIZE 60
 
 class NNWebServer{
@@ -45,5 +45,7 @@ public:
   bool requestAlarm();
 
   void getHttpBody(char *buffer, int timeOut);
+
+  unsigned long playTime;
 };
 

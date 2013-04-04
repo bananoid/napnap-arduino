@@ -12,12 +12,19 @@ time_t GetSyncTime() {
   t += timeOffset;
   time_t tCurrent = (time_t) t;
   wifi->exitCommandMode();
-  Serial << "TIME :: " << t << endl;
+  // Serial << "TIME :: " << t << endl;
   return tCurrent;
 }
 
 NNWebServer::NNWebServer(){
+
+  // Serial << "before wifi new memory free " << getFreeMemory() << endl;
+
   wifi = new WiFlySerial(ARDUINO_RX_PIN ,ARDUINO_TX_PIN);
+
+  // Serial << "after wifi new memory free " << getFreeMemory() << endl;
+
+
   // wifi->setDebugChannel(&Serial);
 }
 
@@ -77,46 +84,48 @@ void NNWebServer::process(){
 }
 
 bool NNWebServer::requestAlarm(){
-  Serial << "memory free 1 " << getFreeMemory() << endl;
+  // Serial << "memory free 1 " << getFreeMemory() << endl;
 
-  char bufRequest[REQUEST_BUFFER_SIZE];
-
-  PString strRequest(bufRequest, REQUEST_BUFFER_SIZE);
-
-  strRequest
-    << F("GET ") << "/api/alarms?current=true"
-    << F(" HTTP/1.1") << "\n"
-    << F("Host: ") << NN_SERVER_URL << "\n"
-    << F("Connection: close") << "\n"
-    << "\n\n";
+  // char bufRequest[REQUEST_BUFFER_SIZE];
+  // PString strRequest(bufRequest, REQUEST_BUFFER_SIZE);
+  // strRequest
+  //   << F("GET ") << "/api/alarms?current=true"
+  //   << F(" HTTP/1.1") << "\n"
+  //   << F("Host: ") << NN_SERVER_URL << "\n"
+  //   << F("Connection: close") << "\n"
+  //   << "\n\n";
 
   wifi->setRemotePort(NN_SERVER_PORT);
   if (wifi->openConnection( NN_SERVER_URL ) ) {
 
-    Serial << strRequest;
+    // Serial << strRequest;
 
-    Serial << "memory free 2 " << getFreeMemory() << endl;
-    wifi->print(strRequest);
-    delete bufRequest;
-    delete strRequest;
-    Serial << "memory free 3 " << getFreeMemory() << endl;
+    // Serial << "memory free 2 " << getFreeMemory() << endl;
+    // wifi->print(strRequest);
+    wifi->println("GET /api/alarms?current=true HTTP/1.1");
+    wifi->print("Host: "); wifi->println(NN_SERVER_URL);
+    wifi->println("Connection: close");
+    wifi->print("\n\n");
 
-    char jsonBuffer[256];
+    // delete bufRequest;
+    // delete strRequest;
+    // Serial << "memory free 3 " << getFreeMemory() << endl;
+
+    char jsonBuffer[200];
 
     getHttpBody(jsonBuffer, 4000);
     wifi->closeConnection();
 
-    Serial << "BODY ::\n" << jsonBuffer << "\n-----------\n" ;
+    Serial << "BODY ::\r\n" << jsonBuffer << "\r\n-----------\r\n" ;
 
-    //JSON PARSING
-    // aJsonObject* root = aJson.parse(jsonBuffer);
-    // aJsonObject* alarmObj = aJson.getArrayItem(root, 0);
-    // if(!alarmObj) return false;
-    // aJsonObject* playTime = aJson.getObjectItem(alarmObj, "loadTime");
-    // Serial << "LoadTIme == " << playTime->valuefloat;
-    // aJson.deleteItem(root);
+    // //JSON PARSING
+    aJsonObject* root = aJson.parse(jsonBuffer);
+    aJsonObject* alarmObj = aJson.getArrayItem(root, 0);
+    if(!alarmObj) return false;
+    aJsonObject* playTimeObj = aJson.getObjectItem(alarmObj, "loadTime");
+    playTime = playTimeObj->valueint;
+    aJson.deleteItem(root);
 
-    Serial << "memory free 4 " << getFreeMemory() << endl;
 
   } else {
     // Failed to open connection

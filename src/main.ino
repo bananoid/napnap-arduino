@@ -1,19 +1,27 @@
 #include "MemoryFree.h"
 #include "NNWebServer.h"
 
-NNWebServer *nnWebServer = NNWebServer::getInstance();
+NNWebServer *nnWebServer;
 
 void setup(){
   Serial.begin(115200);
   Serial.println("--NAPNAP--");
 
-  Serial.print("Free Memory = ");
-  Serial.println(getFreeMemory());
+  // Serial << "SETUP " << getFreeMemory() << endl;
 
+  nnWebServer = NNWebServer::getInstance();
   nnWebServer->begin();
 }
 
 void loop(){
+  // Serial << "BEFORE LOOP " << getFreeMemory() << endl;
+
   nnWebServer->process();
-  nnWebServer->requestAlarm();
+
+  if(nnWebServer->requestAlarm()){
+    Serial << nnWebServer->playTime << endl;
+  }
+
+  Serial << "AFTER LOOP " << getFreeMemory() << endl;
+
 }
