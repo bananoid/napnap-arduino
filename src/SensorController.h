@@ -10,9 +10,10 @@ private:
   float mx, my, mz;
 
   int threshold;
-  bool isMoving;
+
   MPU6050 accelgyro;
 public:
+  bool isMoving;
   SensorController(int th);
   void begin();
   void process();

@@ -25,6 +25,8 @@ private:
   // char bufRequest[REQUEST_BUFFER_SIZE];
   // char bufTemp[TEMP_BUFFER_SIZE];
 
+  unsigned long processTimeOut;
+
 public:
 
   NNWebServer();
@@ -38,9 +40,11 @@ public:
     return instance;
   }
 
+  unsigned long int processDelay;
+
   void begin();
   void connect();
-  void process();
+  bool process();
 
   bool requestAlarm();
 

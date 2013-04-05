@@ -2,14 +2,15 @@
 #include "wifiCommands.h"
 #include "Credentials.h"
 #include "MemoryFree.h"
-#include <aJSON.h>
+// #include <aJSON.h>
+#include <stdlib.h>
 
 time_t GetSyncTime() {
   NNWebServer *nnWebServer = NNWebServer::getInstance();
   WiFlySerial *wifi = nnWebServer->wifi;
   long timeOffset = (long) (2 * 60 * 60);
   unsigned long t =  wifi->getTime();
-  t += timeOffset;
+  // t += timeOffset;
   time_t tCurrent = (time_t) t;
   wifi->exitCommandMode();
   // Serial << "TIME :: " << t << endl;
@@ -22,10 +23,11 @@ NNWebServer::NNWebServer(){
 
   wifi = new WiFlySerial(ARDUINO_RX_PIN ,ARDUINO_TX_PIN);
 
-  // Serial << "after wifi new memory free " << getFreeMemory() << endl;
+  processDelay = 1000000;
+  processTimeOut = 0;
 
+  playTime = 0;
 
-  // wifi->setDebugChannel(&Serial);
 }
 
 void NNWebServer::begin(){
@@ -77,10 +79,22 @@ void NNWebServer::connect(){
   wifi->setRemotePort(NN_SERVER_PORT);
 }
 
-void NNWebServer::process(){
+bool NNWebServer::process(){
   if(! wifi->isAssociated() ) {
     connect();
   }
+
+  if(millis() < processTimeOut) return false;
+
+  processTimeOut = millis() + processDelay;
+
+  Serial << "Process WebServer" << endl;
+
+  if(requestAlarm()){
+    Serial << playTime << endl;
+  }
+
+  return true;
 }
 
 bool NNWebServer::requestAlarm(){
@@ -116,16 +130,20 @@ bool NNWebServer::requestAlarm(){
     getHttpBody(jsonBuffer, 4000);
     wifi->closeConnection();
 
-    Serial << "BODY ::\r\n" << jsonBuffer << "\r\n-----------\r\n" ;
+    char *jbp = jsonBuffer + 3;
 
-    // //JSON PARSING
-    aJsonObject* root = aJson.parse(jsonBuffer);
-    aJsonObject* alarmObj = aJson.getArrayItem(root, 0);
-    if(!alarmObj) return false;
-    aJsonObject* playTimeObj = aJson.getObjectItem(alarmObj, "loadTime");
-    playTime = playTimeObj->valueint;
-    aJson.deleteItem(root);
+    while(*jbp){
+      if( *(jbp-1) == 13 && *(jbp) == 10 ){
+        *(jbp-1) = 0;
+        jbp = jsonBuffer + 3;
+        break;
+      }
+      jbp++;
+    }
 
+    Serial << "time >>" << jbp << "<< \r\n";
+
+    playTime = strtoul(jbp,NULL,0);
 
   } else {
     // Failed to open connection

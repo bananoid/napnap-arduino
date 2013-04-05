@@ -21,7 +21,7 @@ void SensorController::process(){
   isMoving = abs(mx) > threshold || abs(my) > threshold || abs(mz) > threshold;
 
   if(isMoving){
-    Serial << "isMoving";
+    Serial << "isMoving" << "\r\n";
   }else{
     Serial.print(gx); Serial.print("\t");
     Serial.print(gy); Serial.print("\t");
