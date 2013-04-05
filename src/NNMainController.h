@@ -1,5 +1,6 @@
 #include "NNWebServer.h"
 #include "SensorController.h"
+#include "NNRingController.h"
 
 class NNMainController{
 private:
@@ -19,6 +20,7 @@ public:
 
   NNWebServer *nnWebServer;
   SensorController *sensorController;
+  NNRingController *ringController;
 
   static const int kModeRequest = 0;
   static const int kModeRing = 1;

@@ -1,6 +1,7 @@
 #include "NNMainController.h"
 #include <Time.h>
 
+
 NNMainController::NNMainController(){
   mode = kModeRequest;
 }
@@ -12,6 +13,9 @@ void NNMainController::begin(){
 
   sensorController = new SensorController(100);
   sensorController->begin();
+
+  ringController = new NNRingController(8);
+  ringController->begin();
 }
 
 void NNMainController::process(){
@@ -44,6 +48,7 @@ void NNMainController::doRing(){
   if(sensorController->isMoving){
     setMode(kModeRequest);
   }
+  ringController->process();
 }
 
 bool NNMainController::isAlarmTime(){

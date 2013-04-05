@@ -23,9 +23,9 @@ void SensorController::process(){
   if(isMoving){
     Serial << "isMoving" << "\r\n";
   }else{
-    Serial.print(gx); Serial.print("\t");
-    Serial.print(gy); Serial.print("\t");
-    Serial.print(gz); Serial.print("\t");
+    // Serial.print(gx); Serial.print("\t");
+    // Serial.print(gy); Serial.print("\t");
+    // Serial.print(gz); Serial.print("\t");
   }
 
 }
