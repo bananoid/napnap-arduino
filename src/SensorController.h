@@ -2,22 +2,38 @@
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
-class SensorController {
+class SensorControllerDelegate{
+public:
+  virtual void sensorBeginMove();
+  virtual void sensorEndMove();
+};
+
+class SensorController{
 private:
-  int16_t ax, ay, az;
   int16_t gx, gy, gz;
 
   float mx, my, mz;
-
-  int threshold;
+  float instIntensity;
+  float threshold;
 
   MPU6050 accelgyro;
+
+  unsigned long int timeOut;
+
+  void beginMove();
+  void endMove();
+
 public:
   float intensity;
-  float intensityDecay;
+
+  unsigned long int maxIntensity;
+
   bool isMoving;
-  SensorController(int th);
+  SensorController();
   void begin();
   void process();
+
+  SensorControllerDelegate *delegate;
+
 };
 

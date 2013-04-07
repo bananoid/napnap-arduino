@@ -2,7 +2,7 @@
 #include "SensorController.h"
 #include "NNRingController.h"
 
-class NNMainController{
+class NNMainController : public SensorControllerDelegate{
 private:
   void doRequest();
   void doRing();
@@ -33,4 +33,7 @@ public:
 
   bool isAlarmTime();
   void setMode(int m);
+
+  void sensorBeginMove();
+  void sensorEndMove();
 };

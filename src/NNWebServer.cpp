@@ -90,7 +90,7 @@ bool NNWebServer::process(){
 
   processTimeOut = millis() + processDelay;
 
-  Serial << "Process WebServer" << endl;
+  // Serial << "Process WebServer" << endl;
 
   if(requestAlarm()){
     Serial << playTime << endl;
@@ -124,7 +124,7 @@ bool NNWebServer::requestAlarm(){
   //   << F("Host: ") << NN_SERVER_URL << "\n"
   //   << F("Connection: close") << "\n"
   //   << "\n\n";
-
+  delay(200);
   wifi->setRemotePort(NN_SERVER_PORT);
   if (wifi->openConnection( NN_SERVER_URL ) ) {
 
@@ -132,7 +132,7 @@ bool NNWebServer::requestAlarm(){
 
     // Serial << "memory free 2 " << getFreeMemory() << endl;
     // wifi->print(strRequest);
-    wifi->println("GET /api/alarms?current=true HTTP/1.1");
+    wifi->println("GET /api/alarms/next HTTP/1.1");
     wifi->print("Host: "); wifi->println(NN_SERVER_URL);
     wifi->println("Connection: close");
     wifi->print("\n\n");
@@ -221,11 +221,11 @@ void NNWebServer::sendWakeUpData(int intensity, unsigned long int reactionTime){
   wifi->setRemotePort(NN_SERVER_PORT);
   if (wifi->openConnection( NN_SERVER_URL ) ) {
 
-    char bufRequest[REQUEST_BUFFER_SIZE];
+    char bufRequest[32];
     PString body(bufRequest, REQUEST_BUFFER_SIZE);
     body << "{\"int\":" << intensity << ",\"rt\":"<< reactionTime << "}";
 
-    wifi->print("PUT /api/ HTTP/1.1\r\n");
+    wifi->print("PUT /api/alarms/"); wifi->print( alarmId ); wifi->print(" HTTP/1.1\r\n");
     wifi->print("Host: "); wifi->print(NN_SERVER_URL); wifi->print("\r\n");
     wifi->print("Content-Type: application/xml\r\n");
     wifi->print("Content-Length: "); wifi->print(body.length()); wifi->print("\r\n");

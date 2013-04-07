@@ -11,7 +11,8 @@ void NNMainController::begin(){
   nnWebServer->processDelay = 1000;
   nnWebServer->begin();
 
-  sensorController = new SensorController(100);
+  sensorController = new SensorController();
+  sensorController->delegate = this;
   sensorController->begin();
 
   ringController = new NNRingController(8);
@@ -21,6 +22,10 @@ void NNMainController::begin(){
 }
 
 void NNMainController::process(){
+
+  // sensorController->process();
+  // return;
+
   switch(mode){
     case kModeRequest:
       doRequest();
@@ -34,7 +39,7 @@ void NNMainController::process(){
 void NNMainController::setMode(int m){
   if(mode == m) return;
   mode = m;
-  Serial << "Mode Changed to " << ( mode == kModeRequest ? ">>Request<<" : ">>Ring<<");
+  // Serial << "Mode Changed to " << ( mode == kModeRequest ? ">>Request<<" : ">>Ring<<");
 }
 
 void NNMainController::doRequest(){
@@ -49,15 +54,11 @@ void NNMainController::doRequest(){
 
 void NNMainController::doRing(){
   sensorController->process();
-  if(sensorController->isMoving){
-    setMode(kModeRequest);
 
-    unsigned long reactionTime = millis() - alarmStartTime;
-    nnWebServer->sendWakeUpData(sensorController->intensity, reactionTime );
-
-    return;
+  if(!sensorController->isMoving){
+    ringController->process();
   }
-  ringController->process();
+
 }
 
 bool NNMainController::isAlarmTime(){
@@ -67,6 +68,19 @@ bool NNMainController::isAlarmTime(){
     return true;
   }
 
-  Serial << "playTime ::" << nnWebServer->playTime << " now::"<< curTime <<"-----------\r\n" ;
+  // Serial << "playTime ::" << nnWebServer->playTime << " now::"<< curTime <<"-----------\r\n" ;
   return false;
+}
+
+void NNMainController::sensorBeginMove(){
+  Serial << "BM\r\n" ;
+}
+
+void NNMainController::sensorEndMove(){
+  Serial << "EM\r\n" ;
+
+  setMode(kModeRequest);
+  unsigned long reactionTime = millis() - alarmStartTime;
+  nnWebServer->sendWakeUpData(sensorController->maxIntensity, reactionTime );
+
 }
