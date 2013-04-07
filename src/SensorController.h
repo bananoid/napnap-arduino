@@ -13,6 +13,8 @@ private:
 
   MPU6050 accelgyro;
 public:
+  float intensity;
+  float intensityDecay;
   bool isMoving;
   SensorController(int th);
   void begin();

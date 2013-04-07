@@ -26,7 +26,7 @@ private:
   // char bufTemp[TEMP_BUFFER_SIZE];
 
   unsigned long processTimeOut;
-
+  char* getReqNextValue(char* begin);
 public:
 
   NNWebServer();
@@ -47,9 +47,11 @@ public:
   bool process();
 
   bool requestAlarm();
+  void sendWakeUpData(int intensity, unsigned long int reactionTime);
 
   void getHttpBody(char *buffer, int timeOut);
 
+  char *alarmId; // 7LybKfTggdpJuHFJH
   unsigned long playTime;
 };
 

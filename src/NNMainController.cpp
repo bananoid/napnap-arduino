@@ -16,6 +16,8 @@ void NNMainController::begin(){
 
   ringController = new NNRingController(8);
   ringController->begin();
+
+  alarmStartTime = 0;
 }
 
 void NNMainController::process(){
@@ -39,14 +41,21 @@ void NNMainController::doRequest(){
   nnWebServer->process();
 
   if(isAlarmTime()){
-    mode = kModeRing;
+    alarmStartTime = millis();
+    setMode(kModeRing);
   }
+
 }
 
 void NNMainController::doRing(){
   sensorController->process();
   if(sensorController->isMoving){
     setMode(kModeRequest);
+
+    unsigned long reactionTime = millis() - alarmStartTime;
+    nnWebServer->sendWakeUpData(sensorController->intensity, reactionTime );
+
+    return;
   }
   ringController->process();
 }
@@ -54,8 +63,8 @@ void NNMainController::doRing(){
 bool NNMainController::isAlarmTime(){
   unsigned long curTime = now();
   if(nnWebServer->playTime > 0  && curTime >= nnWebServer->playTime){
-    setMode(kModeRing);
     nnWebServer->playTime = 0;
+    return true;
   }
 
   Serial << "playTime ::" << nnWebServer->playTime << " now::"<< curTime <<"-----------\r\n" ;

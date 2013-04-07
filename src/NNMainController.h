@@ -26,6 +26,8 @@ public:
   static const int kModeRing = 1;
   int mode;
 
+  unsigned long alarmStartTime;
+
   void begin();
   void process();
 

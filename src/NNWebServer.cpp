@@ -3,6 +3,7 @@
 #include "Credentials.h"
 #include "MemoryFree.h"
 // #include <aJSON.h>
+#include <PString.h>
 #include <stdlib.h>
 
 time_t GetSyncTime() {
@@ -26,6 +27,7 @@ NNWebServer::NNWebServer(){
   processDelay = 1000000;
   processTimeOut = 0;
 
+  alarmId = (char *)malloc( 18 * sizeof(char) );
   playTime = 0;
 
 }
@@ -41,15 +43,15 @@ void NNWebServer::begin(){
   char bufRequest[REQUEST_BUFFER_SIZE];
   char bufTemp[TEMP_BUFFER_SIZE];
 
-  Serial << F("DateTime:") << year() << "-" << month() << "-" << day() << " " << hour() << ":" << minute() << ":" << second() << F(" UTC+1") << " ---> TIME ::" << now() << endl;
+  // Serial << F("DateTime:") << year() << "-" << month() << "-" << day() << " " << hour() << ":" << minute() << ":" << second() << F(" UTC+1") << " ---> TIME ::" << now() << endl;
 
-  Serial << GetBuffer_P(IDX_WT_MSG_WIFI,bufTemp,TEMP_BUFFER_SIZE) << endl
-    << F("IP: ") << wifi->getIP(bufRequest, REQUEST_BUFFER_SIZE) << endl
-    << F("Netmask: ") << wifi->getNetMask(bufRequest, REQUEST_BUFFER_SIZE) << endl
-    << F("Gateway: ") << wifi->getGateway(bufRequest, REQUEST_BUFFER_SIZE) << endl
-    << F("DNS: ") << wifi->getDNS(bufRequest, REQUEST_BUFFER_SIZE) << endl
-    << F("RSSI: ") << wifi->getRSSI(bufRequest, REQUEST_BUFFER_SIZE) << endl
-    << F("battery: ") <<  wifi->getBattery(bufRequest, REQUEST_BUFFER_SIZE) << endl;
+  // Serial << GetBuffer_P(IDX_WT_MSG_WIFI,bufTemp,TEMP_BUFFER_SIZE) << endl
+  //   << F("IP: ") << wifi->getIP(bufRequest, REQUEST_BUFFER_SIZE) << endl
+  //   << F("Netmask: ") << wifi->getNetMask(bufRequest, REQUEST_BUFFER_SIZE) << endl
+  //   << F("Gateway: ") << wifi->getGateway(bufRequest, REQUEST_BUFFER_SIZE) << endl
+  //   << F("DNS: ") << wifi->getDNS(bufRequest, REQUEST_BUFFER_SIZE) << endl
+  //   << F("RSSI: ") << wifi->getRSSI(bufRequest, REQUEST_BUFFER_SIZE) << endl
+  //   << F("battery: ") <<  wifi->getBattery(bufRequest, REQUEST_BUFFER_SIZE) << endl;
 
 }
 
@@ -97,6 +99,20 @@ bool NNWebServer::process(){
   return true;
 }
 
+char* NNWebServer::getReqNextValue(char* begin){
+  char *p = begin;
+
+  while( *p ){
+    if(*(p-1) == 13 && *(p) == 10){
+      *(p-1) = 0;
+      return (p+1);
+    }
+    p++;
+  }
+
+  return p-1;
+}
+
 bool NNWebServer::requestAlarm(){
   // Serial << "memory free 1 " << getFreeMemory() << endl;
 
@@ -125,25 +141,29 @@ bool NNWebServer::requestAlarm(){
     // delete strRequest;
     // Serial << "memory free 3 " << getFreeMemory() << endl;
 
-    char jsonBuffer[200];
+    char body[200];
 
-    getHttpBody(jsonBuffer, 4000);
+    getHttpBody(body, 4000);
     wifi->closeConnection();
 
-    char *jbp = jsonBuffer + 3;
+    // char *jbp = body;
+    // while(*jbp){
+    //   Serial << *jbp << "::" << (int)*jbp << endl;
+    //   jbp++;
+    // }
 
-    while(*jbp){
-      if( *(jbp-1) == 13 && *(jbp) == 10 ){
-        *(jbp-1) = 0;
-        jbp = jsonBuffer + 3;
-        break;
-      }
-      jbp++;
-    }
+    char *id;
+    char *t;
+    id = getReqNextValue(body);
+    t = getReqNextValue(id);
+    getReqNextValue(t);
 
-    Serial << "time >>" << jbp << "<< \r\n";
+    strcpy(alarmId, id);
+    playTime = strtoul(t,NULL,0);
 
-    playTime = strtoul(jbp,NULL,0);
+    // Serial << "id >>" << id << "<< \r\n";
+    // Serial << "t >>" << t << "<< \r\n";
+    // Serial << "t >>" << playTime << "<< \r\n";
 
   } else {
     // Failed to open connection
@@ -195,4 +215,26 @@ void NNWebServer::getHttpBody(char *buffer, int timeOut){
     }
   }
 }
+
+void NNWebServer::sendWakeUpData(int intensity, unsigned long int reactionTime){
+  // Serial << "sendWakeUpData --> intensity :: " << intensity << " - reactionTime :: " << reactionTime << "\r\n";
+  wifi->setRemotePort(NN_SERVER_PORT);
+  if (wifi->openConnection( NN_SERVER_URL ) ) {
+
+    char bufRequest[REQUEST_BUFFER_SIZE];
+    PString body(bufRequest, REQUEST_BUFFER_SIZE);
+    body << "{\"int\":" << intensity << ",\"rt\":"<< reactionTime << "}";
+
+    wifi->print("PUT /api/ HTTP/1.1\r\n");
+    wifi->print("Host: "); wifi->print(NN_SERVER_URL); wifi->print("\r\n");
+    wifi->print("Content-Type: application/xml\r\n");
+    wifi->print("Content-Length: "); wifi->print(body.length()); wifi->print("\r\n");
+    wifi->print("Cache-Control: no-cache\r\n");
+    wifi->print("Connection: keep-alive\r\n\r\n");
+
+    wifi->print(body);
+
+  }
+}
+
 
