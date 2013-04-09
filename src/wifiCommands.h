@@ -28,7 +28,7 @@ prog_char s_WT_MSG_FAIL_OPEN[] PROGMEM = "Failed on opening connection to:";
 // prog_char s_WT_POST_HEAD_03[] PROGMEM = "Content-Length: ";
 // prog_char s_WT_POST_HEAD_04[] PROGMEM = "Connection: close\n\n";
 
-prog_char s_WT_HTML_HEAD_01[] PROGMEM = "PUT /api/alarms/522202211452145214 HTTP/1.1\r\nHost: localhost:3000\r\nConnection: keep-alive\r\nContent-Length: 37\r\nCache-Control: no-cache\r\nOrigin: chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm\r\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31\r\nContent-Type: application/xml\r\nAccept: */*\r\nAccept-Encoding: gzip,deflate,sdch\r\nAccept-Language: en-US,en;q=0.8\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3\r\n\r\n";
+// prog_char s_WT_HTML_HEAD_01[] PROGMEM = "PUT /api/alarms/522202211452145214 HTTP/1.1\r\nHost: localhost:3000\r\nConnection: keep-alive\r\nContent-Length: 37\r\nCache-Control: no-cache\r\nOrigin: chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm\r\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31\r\nContent-Type: application/xml\r\nAccept: */*\r\nAccept-Encoding: gzip,deflate,sdch\r\nAccept-Language: en-US,en;q=0.8\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3\r\n\r\n";
 
 
 #define IDX_WT_SETUP_00 0
@@ -90,7 +90,7 @@ PROGMEM const char *WT_string_table[] =
   s_WT_MSG_WIRE_RX,
   s_WT_MSG_WIRE_TX,
   s_WT_MSG_FAIL_OPEN,
-  s_WT_HTML_HEAD_01,
+  // s_WT_HTML_HEAD_01,
   // s_WT_HTML_HEAD_02,
   // s_WT_HTML_HEAD_03,
   // s_WT_HTML_HEAD_04,

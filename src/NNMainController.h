@@ -1,8 +1,10 @@
 #include "NNWebServer.h"
 #include "SensorController.h"
 #include "NNRingController.h"
+#include "NNLedController.h"
 
-class NNMainController : public SensorControllerDelegate{
+class NNMainController : public SensorControllerDelegate, public NNWebServerDelegate
+{
 private:
   void doRequest();
   void doRing();
@@ -21,6 +23,7 @@ public:
   NNWebServer *nnWebServer;
   SensorController *sensorController;
   NNRingController *ringController;
+  NNLedController *ledController;
 
   static const int kModeRequest = 0;
   static const int kModeRing = 1;
@@ -36,4 +39,6 @@ public:
 
   void sensorBeginMove();
   void sensorEndMove();
+
+  void nnwebServerAlarmSet();
 };

@@ -8,6 +8,7 @@ NNMainController::NNMainController(){
 
 void NNMainController::begin(){
   nnWebServer = NNWebServer::getInstance();
+  nnWebServer->delegate = this;
   nnWebServer->processDelay = 1000;
   nnWebServer->begin();
 
@@ -17,6 +18,9 @@ void NNMainController::begin(){
 
   ringController = new NNRingController(8);
   ringController->begin();
+
+  ledController = new NNLedController();
+  ledController->begin();
 
   alarmStartTime = 0;
 }
@@ -40,6 +44,16 @@ void NNMainController::setMode(int m){
   if(mode == m) return;
   mode = m;
   // Serial << "Mode Changed to " << ( mode == kModeRequest ? ">>Request<<" : ">>Ring<<");
+
+  switch(mode){
+    case kModeRequest:
+
+      break;
+    case kModeRing:
+      ledController->doAlarmRingSignal(true);
+      break;
+  };
+
 }
 
 void NNMainController::doRequest(){
@@ -58,7 +72,6 @@ void NNMainController::doRing(){
   if(!sensorController->isMoving){
     ringController->process();
   }
-
 }
 
 bool NNMainController::isAlarmTime(){
@@ -74,6 +87,7 @@ bool NNMainController::isAlarmTime(){
 
 void NNMainController::sensorBeginMove(){
   Serial << "BM\r\n" ;
+  ledController->doAlarmRingSignal(false);
 }
 
 void NNMainController::sensorEndMove(){
@@ -83,4 +97,8 @@ void NNMainController::sensorEndMove(){
   unsigned long reactionTime = millis() - alarmStartTime;
   nnWebServer->sendWakeUpData(sensorController->maxIntensity, reactionTime );
 
+}
+
+void NNMainController::nnwebServerAlarmSet(){
+  ledController->doAlarmSetSignal();
 }

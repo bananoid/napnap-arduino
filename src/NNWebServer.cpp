@@ -124,6 +124,7 @@ bool NNWebServer::requestAlarm(){
   //   << F("Host: ") << NN_SERVER_URL << "\n"
   //   << F("Connection: close") << "\n"
   //   << "\n\n";
+  wifi->closeConnection();
   delay(200);
   wifi->setRemotePort(NN_SERVER_PORT);
   if (wifi->openConnection( NN_SERVER_URL ) ) {
@@ -158,12 +159,15 @@ bool NNWebServer::requestAlarm(){
     t = getReqNextValue(id);
     getReqNextValue(t);
 
-    strcpy(alarmId, id);
-    playTime = strtoul(t,NULL,0);
+    unsigned long pt = strtoul(t,NULL,0);
+    if( strcmp(alarmId,id) != 0 || playTime != pt){
+      playTime = pt;
+      strcpy(alarmId, id);
+      delegate->nnwebServerAlarmSet();
+    }
 
-    // Serial << "id >>" << id << "<< \r\n";
-    // Serial << "t >>" << t << "<< \r\n";
-    // Serial << "t >>" << playTime << "<< \r\n";
+    Serial << "id >>" << id << "<< \r\n";
+    Serial << "t >>" << playTime << "<< \r\n";
 
   } else {
     // Failed to open connection
@@ -218,6 +222,8 @@ void NNWebServer::getHttpBody(char *buffer, int timeOut){
 
 void NNWebServer::sendWakeUpData(int intensity, unsigned long int reactionTime){
   // Serial << "sendWakeUpData --> intensity :: " << intensity << " - reactionTime :: " << reactionTime << "\r\n";
+  wifi->closeConnection();
+  delay(200);
   wifi->setRemotePort(NN_SERVER_PORT);
   if (wifi->openConnection( NN_SERVER_URL ) ) {
 
@@ -234,6 +240,7 @@ void NNWebServer::sendWakeUpData(int intensity, unsigned long int reactionTime){
 
     wifi->print(body);
 
+    wifi->closeConnection();
   }
 }
 

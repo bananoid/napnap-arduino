@@ -10,6 +10,7 @@ SensorController::SensorController(){
   mx=my=mz=0;
   intensity = 0;
   threshold = 20000;
+  isMoving = false;
 }
 
 void SensorController::begin(){
@@ -50,9 +51,10 @@ void SensorController::process(){
 
   isMoving = isM;
 
-  if( millis() < timeOut ) return;
-  timeOut = millis() + 500;
+  // if( millis() < timeOut ) return;
+  // timeOut = millis() + 500;
   // Serial << "gx " << gx  << " mx " << mx  << " i " << intensity << " th " << threshold << (isMoving?" MOVE":" ") << "\r\n";
+
 }
 
 void SensorController::beginMove(){

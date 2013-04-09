@@ -19,6 +19,12 @@
 // #define POST_BUFFER_SIZE 60
 #define TEMP_BUFFER_SIZE 60
 
+class NNWebServerDelegate{
+public:
+  virtual void nnwebServerAlarmSet();
+};
+
+
 class NNWebServer{
 private:
 
@@ -30,7 +36,9 @@ private:
 public:
 
   NNWebServer();
+  NNWebServerDelegate *delegate;
   WiFlySerial *wifi;
+
   static NNWebServer* getInstance()
   {
     // The only instance
